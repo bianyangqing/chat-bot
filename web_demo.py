@@ -1,7 +1,7 @@
 from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 import logging
-
+import openai
 logging.basicConfig(level=logging.INFO)
 
 tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
@@ -11,6 +11,44 @@ chatgml_chat_history = []
 
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
+
+openai.api_key = "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"
+
+
+class Conversation:
+    def __init__(self, prompt, num_of_round):
+        self.prompt = prompt
+        self.num_of_round = num_of_round
+        self.messages = []
+        self.messages.append({"role": "system", "content": self.prompt})
+
+    def ask(self, question):
+        print("start")
+        print(openai.api_key)
+        try:
+            self.messages.append({"role": "user", "content": question})
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=self.messages,
+                temperature=0.5,
+                max_tokens=2048,
+                top_p=1,
+            )
+        except Exception as e:
+            print(e)
+            return e
+
+        message = response["choices"][0]["message"]["content"]
+        self.messages.append({"role": "assistant", "content": message})
+
+        if len(self.messages) > self.num_of_round * 2 + 1:
+            del self.messages[1:3]
+        return message
+
+
+prompt = """你是一个智能客服，可以帮助中国的餐饮店老板，在饿了么外卖平台上更好的经营"""
+
+conv = Conversation(prompt, 5)
 
 
 def notSupport(model_name, input):
@@ -41,7 +79,7 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
     if model_name == "ChatGLM-6B":
         response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chatgml_chat_history)
     elif model_name == "chatGpt-api":
-        response = notSupport(model_name, input)
+        response = conv.ask(input)
     else:
         response = notSupport(model_name, input)
 
