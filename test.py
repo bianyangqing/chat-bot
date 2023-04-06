@@ -21,4 +21,4 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
 
     txt.submit(predict, [txt, state], [chatbot, state])
 
-demo.launch(share=False,inbrowser=True)
+demo.launch(share=True,inbrowser=True)
