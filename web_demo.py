@@ -12,7 +12,7 @@ chatgml_chat_history = []
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 class Conversation:
