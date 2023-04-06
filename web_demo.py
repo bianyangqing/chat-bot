@@ -36,6 +36,7 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
     logging.warning("input:{}".format(input))
     history.append(input)
 
+
     if model_name == "ChatGLM-6B":
         response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, history)
     elif model_name == "chatGpt-api":
@@ -51,7 +52,7 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
 with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
-
+    state = [(u, b) for u, b in zip(state[::2], state[1::2])]
     with gr.Row():
         max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
