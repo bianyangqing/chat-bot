@@ -18,17 +18,14 @@ def notSupport(model_name, input):
 
 
 def predict(input, max_length, top_p, temperature, model_name, history=None):
-    logging.warning("model_name:{}".format(model_name))
-
     if model_name == "ChatGLM-6B":
+        logging.warning("ChatGLM-6B model_name:{}".format(model_name))
         predictByChatGLM(input, max_length, top_p, temperature, model_name, history)
     elif model_name == "chatGpt-api":
         notSupport(model_name, input)
-    else:
-        notSupport(model_name, input)
+
 
 def predictByChatGLM(input, max_length, top_p, temperature, model_name, history=None):
-
     if history is None:
         history = []
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
@@ -42,7 +39,6 @@ def predictByChatGLM(input, max_length, top_p, temperature, model_name, history=
         if len(updates) < MAX_BOXES:
             updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
         yield [history] + updates
-
 
 
 with gr.Blocks() as demo:
