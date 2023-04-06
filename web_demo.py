@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
 model = AutoModel.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True).half().cuda()
 model = model.eval()
-chat_history = []
+chatgml_chat_history = []
 
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
@@ -39,12 +39,13 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
 
 
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chat_history)
+        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chatgml_chat_history)
     elif model_name == "chatGpt-api":
         response = notSupport(model_name, input)
     else:
         response = notSupport(model_name, input)
-    chat_history.append((input, response))
+
+    chatgml_chat_history.append((input, response))
     history.append(response)
     responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
     return responses, history
