@@ -31,6 +31,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, histor
 
 def predict(input, max_length, top_p, temperature, model_name, history=[]):
     logging.warning("history:{}".format(history))
+    logging.warning("input:{}".format(input))
     history.append(input)
 
     if model_name == "ChatGLM-6B":
