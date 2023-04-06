@@ -13,54 +13,48 @@ MAX_BOXES = MAX_TURNS * 2
 
 
 def notSupport(model_name, input):
-    gr.update(visible=True, value="User：" + input)
-    gr.update(visible=True, value="目前不支持:{}".format(model_name))
+    return "目前不支持:{}".format(model_name)
 
 
-def predict(input, max_length, top_p, temperature, model_name, history=None):
-    logging.warning("ChatGLM-6B1 model_name:{}".format(model_name))
-    if model_name == "ChatGLM-6B":
-        logging.warning("ChatGLM-6B model_name:{}".format(model_name))
-        predictByChatGLM(input, max_length, top_p, temperature, model_name, history)
-    elif model_name == "chatGpt-api":
-        notSupport(model_name, input)
-
-
-def predictByChatGLM(input, max_length, top_p, temperature, model_name, history=None):
+def predict_by_chatgml(input, max_length, top_p, temperature, model_name, history=[]):
+    global updates
     if history is None:
         history = []
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                temperature=temperature):
         updates = []
         for query, response in history:
-            logging.warning("query:{}".format(query))
-            logging.warning("response:{}".format(response))
-            updates.append(gr.update(visible=True, value="User：" + query))
-            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + response))
-        if len(updates) < MAX_BOXES:
-            updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
-        yield [history] + updates
+            updates.append(response)
+    return updates[-1]
 
 
-with gr.Blocks() as demo:
-    logging.warning("web_demo_start")
+
+def predict(input, max_length, top_p, temperature, model_name, history=[]):
+    logging.warning("history:{}".format(history))
+    history.append(input)
+
+    if model_name == "ChatGLM-6B":
+        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, history)
+    elif model_name == "chatGpt-api":
+        response = notSupport(model_name, input)
+    else:
+        response = notSupport(model_name, input)
+
+    history.append(response)
+    responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
+    return responses, history
+
+
+with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as demo:
+    chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
-    text_boxes = []
-    for i in range(MAX_BOXES):
-        if i % 2 == 0:
-            text_boxes.append(gr.Markdown(visible=False, label="Ask a Question："))
-        else:
-            text_boxes.append(gr.Markdown(visible=False, label="Reply："))
 
     with gr.Row():
-        with gr.Column(scale=4):
-            txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", lines=11).style(
-                container=False)
-        with gr.Column(scale=1):
-            max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
-            top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
-            temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
-            model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
-            button = gr.Button("Generate")
-    button.click(predict, [txt, max_length, top_p, temperature, model_name, state], [state] + text_boxes)
-demo.queue().launch(share=True, inbrowser=True)
+        max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
+        top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
+        temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+        model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
+        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
+
+    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, state], [chatbot, state])
+demo.launch(share=True, inbrowser=True)
