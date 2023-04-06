@@ -16,7 +16,9 @@ def notSupport(model_name, input):
     return "目前不支持:{}".format(model_name)
 
 
-def predict_by_chatgml(input, max_length, top_p, temperature, model_name, history=[]):
+def predict_by_chatgml(input, max_length, top_p, temperature, model_name, history=None):
+    if history is None:
+        history = []
     global updates
     if history is None:
         history = []
@@ -29,7 +31,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, histor
 
 
 
-def predict(input, max_length, top_p, temperature, model_name, history=[]):
+def predict(input, max_length, top_p, temperature, model_name, history=None):
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     history.append(input)
