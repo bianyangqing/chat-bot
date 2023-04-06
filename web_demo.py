@@ -9,6 +9,7 @@ MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
 
 
+
 def predict(input, max_length, top_p, temperature, history=None):
     if history is None:
         history = []
