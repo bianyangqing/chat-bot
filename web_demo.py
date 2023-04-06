@@ -1,5 +1,8 @@
 from transformers import AutoModel, AutoTokenizer
 import gradio as gr
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
 model = AutoModel.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True).half().cuda()
@@ -10,7 +13,8 @@ MAX_BOXES = MAX_TURNS * 2
 
 
 
-def predict(input, max_length, top_p, temperature, history=None):
+def predict(input, max_length, top_p, temperature, model_name, history=None):
+    logging.warning("model_name:{}".format(model_name))
     if history is None:
         history = []
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
@@ -41,6 +45,7 @@ with gr.Blocks() as demo:
             max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
             top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
             temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+            model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
             button = gr.Button("Generate")
-    button.click(predict, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
+    button.click(predict, [txt, max_length, top_p, temperature, model_name, state], [state] + text_boxes)
 demo.queue().launch(share=True, inbrowser=True)
