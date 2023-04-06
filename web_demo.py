@@ -59,5 +59,5 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
 
-    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, state], [chatbot, state])
+    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, state], [state])
 demo.launch(share=True, inbrowser=True)
