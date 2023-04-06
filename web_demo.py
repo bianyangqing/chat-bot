@@ -15,12 +15,16 @@ MAX_BOXES = MAX_TURNS * 2
 
 def predict(input, max_length, top_p, temperature, model_name, history=None):
     logging.warning("model_name:{}".format(model_name))
+    logging.warning("history:{}".format(history))
+
     if history is None:
         history = []
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                temperature=temperature):
         updates = []
         for query, response in history:
+            logging.warning("query:{}".format(query))
+            logging.warning("response:{}".format(response))
             updates.append(gr.update(visible=True, value="User：" + query))
             updates.append(gr.update(visible=True, value="ChatGLM-6B：" + response))
         if len(updates) < MAX_BOXES:
