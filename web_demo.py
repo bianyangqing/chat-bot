@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.INFO)
 tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
 model = AutoModel.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True).half().cuda()
 model = model.eval()
+chat_history = []
 
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
@@ -38,12 +39,12 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
 
 
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, history)
+        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chat_history)
     elif model_name == "chatGpt-api":
         response = notSupport(model_name, input)
     else:
         response = notSupport(model_name, input)
-
+    chat_history.append((input, response))
     history.append(response)
     responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
     return responses, history
@@ -52,7 +53,6 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
 with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
-    state = [(u, b) for u, b in zip(state[::2], state[1::2])]
     with gr.Row():
         max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
