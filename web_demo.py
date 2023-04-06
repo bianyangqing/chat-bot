@@ -18,6 +18,7 @@ def notSupport(model_name, input):
 
 
 def predict(input, max_length, top_p, temperature, model_name, history=None):
+    logging.warning("ChatGLM-6B1 model_name:{}".format(model_name))
     if model_name == "ChatGLM-6B":
         logging.warning("ChatGLM-6B model_name:{}".format(model_name))
         predictByChatGLM(input, max_length, top_p, temperature, model_name, history)
