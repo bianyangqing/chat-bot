@@ -2,6 +2,11 @@ from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 import logging
 import openai
+import pinecone
+import uuid
+
+session_id = str(uuid.uuid4().hex)
+
 logging.basicConfig(level=logging.INFO)
 
 tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
@@ -12,7 +17,136 @@ chatgml_chat_history = []
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
 
+EMBEDDINGS_MODEL = "text-embedding-ada-002"
+GENERATIVE_MODEL = "gpt-3.5-turbo" # use gpt-4 for better results
+EMBEDDING_DIMENSIONS = 1536
+TEXT_EMBEDDING_CHUNK_SIZE = 200
+TOP_K = 10
+COSINE_SIM_THRESHOLD = 0.7
+MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
+MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
+
+
 openai.api_key = "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"
+PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
+PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
+PINECONE_ENV = "us-east4-gcp"
+
+
+
+def load_pinecone_index() -> pinecone.Index:
+    """
+    Load index from Pinecone, raise error if the index can't be found.
+    """
+    pinecone.init(
+        api_key=PINECONE_API_KEY,
+        environment=PINECONE_ENV,
+    )
+    index_name = PINECONE_INDEX
+    if not index_name in pinecone.list_indexes():
+        print(pinecone.list_indexes())
+        raise KeyError(f"Index '{index_name}' does not exist.")
+    index = pinecone.Index(index_name)
+
+    return index
+
+
+pinecone_index = load_pinecone_index()
+
+def get_embedding(text, engine):
+    return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
+
+def query_knowledge(question, session_id, pinecone_index):
+
+    search_query_embedding = get_embedding(question, EMBEDDINGS_MODEL)
+    logging.info(f"embedding for question: {search_query_embedding}")
+
+    query_response = pinecone_index.query(
+        namespace=session_id,
+        top_k=TOP_K,
+        include_values=False,
+        include_metadata=True,
+        vector=search_query_embedding,
+    )
+    logging.warning(
+        f"[get_answer_from_files] received query response from Pinecone: {query_response}"
+    )
+
+    return ""
+
+
+
+def get_answer_from_files(question, session_id, pinecone_index):
+    logging.info(f"Getting answer for question: {question}")
+
+    search_query_embedding = get_embedding(question, EMBEDDINGS_MODEL)
+    logging.info(f"embedding for question: {search_query_embedding}")
+
+    try:
+        query_response = pinecone_index.query(
+            namespace=session_id,
+            top_k=TOP_K,
+            include_values=False,
+            include_metadata=True,
+            vector=search_query_embedding,
+        )
+        logging.warning(
+            f"[get_answer_from_files] received query response from Pinecone: {query_response}"
+        )
+
+        files_string = ""
+        # file_text_dict = current_app.config["file_text_dict"]
+
+        file_string = ""
+        for i in range(len(query_response.matches)):
+            result = query_response.matches[i]
+            file_chunk_id = result.id
+            score = result.score
+            filename = result.metadata["filename"]
+            # file_text = file_text_dict.get(file_chunk_id)
+            # file_string = f"###\n\"{filename}\"\n{file_text}\n"
+            if score < COSINE_SIM_THRESHOLD and i > 0:
+                logging.info(
+                    f"[get_answer_from_files] score {score} is below threshold {COSINE_SIM_THRESHOLD} and i is {i}, breaking")
+                break
+            files_string += file_string
+
+        # Note: this is not the proper way to use the ChatGPT conversational format, but it works for now
+        messages = [
+            {
+                "role": "system",
+                "content": f"Given a question, try to answer it using the content of the file extracts below, and if you cannot answer, or find " \
+                           f"a relevant file, just output \"I couldn't find the answer to that question in your files.\".\n\n" \
+                           f"If the answer is not contained in the files or if there are no file extracts, respond with \"I couldn't find the answer " \
+                           f"to that question in your files.\" If the question is not actually a question, respond with \"That's not a valid question.\"\n\n" \
+                           f"In the cases where you can find the answer, first give the answer. Then explain how you found the answer from the source or sources, " \
+                           f"and use the exact filenames of the source files you mention. Do not make up the names of any other files other than those mentioned " \
+                           f"in the files context. Give the answer in markdown format." \
+                           f"Use the following format:\n\nQuestion: <question>\n\nFiles:\n<###\n\"filename 1\"\nfile text>\n<###\n\"filename 2\"\nfile text>...\n\n" \
+                           f"Answer: <answer or \"I couldn't find the answer to that question in your files\" or \"That's not a valid question.\">\n\n" \
+                           f"Question: {question}\n\n" \
+                           f"Files:\n{files_string}\n" \
+                           f"Answer:"
+            },
+        ]
+
+        response = openai.ChatCompletion.create(
+            messages=messages,
+            model=GENERATIVE_MODEL,
+            max_tokens=1000,
+            temperature=0,
+        )
+
+        choices = response["choices"]  # type: ignore
+        answer = choices[0].message.content.strip()
+
+        logging.info(f"[get_answer_from_files] answer: {answer}")
+
+        return answer
+
+    except Exception as e:
+        logging.info(f"[get_answer_from_files] error: {e}")
+        return str(e)
 
 
 class Conversation:
@@ -69,12 +203,13 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, histor
     return updates[-1]
 
 
-
 def predict(input, max_length, top_p, temperature, model_name, history=None):
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
-    history.append(input)
 
+    query_knowledge(input, session_id, pinecone_index)
+
+    history.append(input)
 
     if model_name == "ChatGLM-6B":
         response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chatgml_chat_history)
