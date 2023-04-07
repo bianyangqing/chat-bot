@@ -27,7 +27,6 @@ MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
 MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
 
 
-openai.api_key = "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"
 PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
@@ -189,7 +188,7 @@ def notSupport(model_name, input):
     return "目前不支持:{}".format(model_name)
 
 
-def predict_by_chatgml(input, max_length, top_p, temperature, model_name, history=None):
+def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey , history=None):
     if history is None:
         history = []
     global updates
@@ -203,7 +202,8 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, histor
     return updates[-1]
 
 
-def predict(input, max_length, top_p, temperature, model_name, history=None):
+def predict(input, max_length, top_p, temperature, model_name, apikey, history=None):
+    openai.api_key = apikey
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
@@ -213,7 +213,7 @@ def predict(input, max_length, top_p, temperature, model_name, history=None):
     history.append(input)
 
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, chatgml_chat_history)
+        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey , chatgml_chat_history)
     elif model_name == "chatGpt-api":
         response = conv.ask(input)
     else:
@@ -234,6 +234,7 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
         model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
+        apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
-    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, state], [chatbot, state])
+    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, apikey, state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
