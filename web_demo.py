@@ -61,9 +61,7 @@ def query_knowledge(question, session_id, pinecone_index):
     logging.info(f"embedding for question: {search_query_embedding}")
 
     query_response = pinecone_index.query(
-        namespace=session_id,
         top_k=TOP_K,
-        include_values=False,
         include_metadata=True,
         vector=search_query_embedding,
     )
