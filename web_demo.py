@@ -27,7 +27,7 @@ MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
 MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
 
 
-openai.api_key = "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"
+openai.api_key = "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"
 PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
@@ -206,6 +206,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, histor
 def predict(input, max_length, top_p, temperature, model_name, history=None):
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
+    logging.warning("model_name:{}".format(model_name))
 
     query_knowledge(input, session_id, pinecone_index)
 
