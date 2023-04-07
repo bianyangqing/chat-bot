@@ -27,7 +27,7 @@ MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
 MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
 
 
-openai.api_key = "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"
+openai.api_key = "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"
 PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
