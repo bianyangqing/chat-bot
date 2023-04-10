@@ -249,7 +249,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 def predict(input, model_name, apikey, history=None):
     openai.api_key = the_key_you_need,
-    openai.api_base = "https://chatgptproxyapi-atq.pages.dev/api/v1"
+    openai.api_base = "https://openai-proxy-aio.pages.dev/api/v1"
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
