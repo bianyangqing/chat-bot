@@ -6,10 +6,6 @@ import pinecone
 import uuid
 import random
 import os
-import requests
-
-
-
 
 session_id = str(uuid.uuid4().hex)
 
@@ -90,15 +86,11 @@ def load_pinecone_index() -> pinecone.Index:
 pinecone_index = load_pinecone_index()
 
 def get_embedding(text, engine):
-    response = openai.ChatCompletion.create(
-        model=EMBEDDINGS_MODEL,
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": text}
-        ],
-        temperature=0,
+    resp = openai.Embedding.create(
+        model="text-embedding-ada-002",
+        input="The food was delicious and the waiter..."
     )
-    logging.warning("openai.ChatCompletion.create:{}".format(response))
+    logging.warning("openai.ChatCompletion.create:{}".format(resp))
     return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
 
 def query_knowledge(question, session_id, pinecone_index):
@@ -255,7 +247,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 def predict(input, model_name, apikey, history=None):
     openai.api_key = apikey,
-    openai.api_base = "https://chatgptproxyapi-atq.pages.dev"
+    openai.api_base = "https://openai-proxy-aio.pages.dev/api/v1"
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))

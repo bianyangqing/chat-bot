@@ -1,15 +1,12 @@
-import random
+import os
+import openai
+api_key = "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"
+openai.api_key = api_key
+openai.api_base = 'https://openai-proxy-aio.pages.dev/api/v1'
+# "https://api.openai.com/v1/embeddings"
+resp = openai.Embedding.create(
+  model="text-embedding-ada-002",
+  input="The food was delicious and the waiter..."
+)
 
-def add_random_chars(string):
-    result = ""
-    for char in string:
-        random_char = chr(random.randint(33, 126))  # 生成33到126之间的随机ASCII码
-        result += char + random_char
-    return result
-
-# 示例用法
-my_string = "xxx"
-new_string = add_random_chars(my_string)
-print(new_string)
-result = new_string[::2]
-print(result)
+print(resp)
