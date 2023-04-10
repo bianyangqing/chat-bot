@@ -41,7 +41,7 @@ PINECONE_NAMESPACE = "demo_v1"
 
 
 
-url = "https://oa3fr.faults.dev/v1/chat/completions"
+url = "https://195.245.242.82:8443/v1/chat/completions"
 api_key = os.environ.get('the_key_you_need')
 
 
