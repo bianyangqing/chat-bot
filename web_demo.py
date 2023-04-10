@@ -207,8 +207,8 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
     return updates[-1]
 
 
-def predict(input, model_name, history=None):
-    # openai.api_key = os.environ.get('the_key_you_need'),
+def predict(input, model_name, apikey, history=None):
+    openai.api_key = apikey,
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
@@ -241,9 +241,8 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
         # temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
         model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"],default="ChatGLM-6B", label="Model")
-        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
         apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
+        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
 
-        openai.api_key = apikey
-    txt.submit(predict, [txt, model_name, state], [chatbot, state])
+    txt.submit(predict, [txt, model_name, apikey, state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
