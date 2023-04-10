@@ -4,6 +4,7 @@ import logging
 import openai
 import pinecone
 import uuid
+import os
 
 session_id = str(uuid.uuid4().hex)
 
@@ -31,8 +32,6 @@ PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
 PINECONE_NAMESPACE = "demo_v1"
-
-KEY_ENCODE = "sdkQ-yp7lvI?p3i8m%nj8bwRSar?c^0$9{bSx(VZqe4S2#Tm3HBjl'b6k/FlJSABiZwiB%pbM6bSsZE6B$82c]LYL:gkS=Poe2NWrT"
 
 def load_pinecone_index() -> pinecone.Index:
     """
@@ -209,7 +208,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 
 def predict(input, model_name, history=None):
-    openai.api_key = KEY_ENCODE[::2],
+    openai.api_key = os.environ.get('the_key_you_need'),
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
@@ -222,7 +221,7 @@ def predict(input, model_name, history=None):
 
     logging.warning("query_template:{}".format(query_template))
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(query_template, 2048, 0.7, 0.95, model_name, apikey , chatgml_chat_history)
+        response = predict_by_chatgml(query_template, 2048, 0.7, 0.95, model_name, chatgml_chat_history)
     elif model_name == "chatGpt-api":
         response = conv.ask(query_template)
     else:
@@ -242,7 +241,7 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
         # temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
         model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"],default="ChatGLM-6B", label="Model")
-        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
+        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
     txt.submit(predict, [txt, model_name, state], [chatbot, state])
