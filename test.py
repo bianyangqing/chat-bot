@@ -1,6 +1,6 @@
 import os
 import openai
-api_key = "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"
+api_key = "sk-**"
 openai.api_key = api_key
 openai.api_base = 'https://openai-proxy-aio.pages.dev/api/v1'
 # "https://api.openai.com/v1/embeddings"
