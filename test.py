@@ -1,24 +1,15 @@
-import gradio as gr
-import logging
+import random
 
-logging.basicConfig(level=logging.INFO)
+def add_random_chars(string):
+    result = ""
+    for char in string:
+        random_char = chr(random.randint(33, 126))  # 生成33到126之间的随机ASCII码
+        result += char + random_char
+    return result
 
-def predict(input, history=[]):
-    logging.warning("history:{}".format(history))
-    history.append(input)
-    response = "收到了一个问题：{}".format(input)
-    history.append(response)
-    responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
-    return responses, history
-
-
-with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as demo:
-    chatbot = gr.Chatbot(elem_id="chatbot")
-    state = gr.State([])
-
-    with gr.Row():
-        txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
-
-    txt.submit(predict, [txt, state], [chatbot, state])
-
-demo.launch(share=True,inbrowser=True)
+# 示例用法
+my_string = "xxx"
+new_string = add_random_chars(my_string)
+print(new_string)
+result = new_string[::2]
+print(result)

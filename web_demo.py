@@ -21,7 +21,7 @@ EMBEDDINGS_MODEL = "text-embedding-ada-002"
 GENERATIVE_MODEL = "gpt-3.5-turbo" # use gpt-4 for better results
 EMBEDDING_DIMENSIONS = 1536
 TEXT_EMBEDDING_CHUNK_SIZE = 200
-TOP_K = 2
+TOP_K = 20
 COSINE_SIM_THRESHOLD = 0.7
 MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
 MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
@@ -32,6 +32,7 @@ PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
 PINECONE_NAMESPACE = "demo_v1"
 
+KEY_ENCODE = "sdkQ-yp7lvI?p3i8m%nj8bwRSar?c^0$9{bSx(VZqe4S2#Tm3HBjl'b6k/FlJSABiZwiB%pbM6bSsZE6B$82c]LYL:gkS=Poe2NWrT"
 
 def load_pinecone_index() -> pinecone.Index:
     """
@@ -73,7 +74,7 @@ def query_knowledge(question, session_id, pinecone_index):
     result = ""
     knowledge_list = query_response['matches']
     if len(knowledge_list) > 0:
-        for i in range(len(knowledge_list)):
+        for i in max(range(len(knowledge_list)), 2):
             result = result + "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
 
     return result
@@ -237,12 +238,12 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
     with gr.Row():
-        max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
-        top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
-        temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+        # max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
+        # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
+        # temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
         model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"],default="ChatGLM-6B", label="Model")
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
-        apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
+        # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
-    txt.submit(predict, [txt, max_length, top_p, temperature, model_name, apikey, state], [chatbot, state])
+    txt.submit(predict, [txt, 2048, 0.7, 0.95, model_name, KEY_ENCODE[::2], state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
