@@ -208,8 +208,8 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
     return updates[-1]
 
 
-def predict(input, model_name, apikey, history=None):
-    openai.api_key = apikey
+def predict(input, model_name, history=None):
+    openai.api_key = KEY_ENCODE[::2],
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
@@ -245,5 +245,5 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
-    txt.submit(predict, [txt, model_name, KEY_ENCODE[::2], state], [chatbot, state])
+    txt.submit(predict, [txt, model_name, state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
