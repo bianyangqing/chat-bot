@@ -208,7 +208,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
     return updates[-1]
 
 
-def predict(input, max_length, top_p, temperature, model_name, apikey, history=None):
+def predict(input, model_name, apikey, history=None):
     openai.api_key = apikey
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
@@ -222,7 +222,7 @@ def predict(input, max_length, top_p, temperature, model_name, apikey, history=N
 
     logging.warning("query_template:{}".format(query_template))
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(query_template, max_length, top_p, temperature, model_name, apikey , chatgml_chat_history)
+        response = predict_by_chatgml(query_template, 2048, 0.7, 0.95, model_name, apikey , chatgml_chat_history)
     elif model_name == "chatGpt-api":
         response = conv.ask(query_template)
     else:
@@ -245,5 +245,5 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
-    txt.submit(predict, [txt, 2048, 0.7, 0.95, model_name, KEY_ENCODE[::2], state], [chatbot, state])
+    txt.submit(predict, [txt, model_name, KEY_ENCODE[::2], state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
