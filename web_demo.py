@@ -40,6 +40,7 @@ PINECONE_NAMESPACE = "demo_v1"
 url = "https://195.245.242.82:8443/v1/chat/completions"
 the_key_you_need = os.environ.get('the_key_you_need')
 
+openai_api_base = os.environ.get('openai_api_base')
 
 headers = {
   'Authorization': f'Bearer {the_key_you_need}',
@@ -249,7 +250,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 def predict(input, model_name, apikey, history=None):
     openai.api_key = the_key_you_need,
-    openai.api_base = "https://openai-proxy-aio.pages.dev/api/v1"
+    openai.api_base = openai_api_base
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
