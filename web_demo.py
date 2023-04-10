@@ -255,7 +255,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 def predict(input, model_name, apikey, history=None):
     openai.api_key = apikey,
-    openai.api_base = "https://chatgptproxyapi-atq.pages.dev/"
+    openai.api_base = "https://chatgptproxyapi-atq.pages.dev"
     logging.warning("history:{}".format(history))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
