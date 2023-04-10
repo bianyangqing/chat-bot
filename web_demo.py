@@ -69,7 +69,13 @@ def query_knowledge(question, session_id, pinecone_index):
         f"[get_answer_from_files] received query response from Pinecone: {query_response}"
     )
 
-    return ""
+    result = ""
+    knowledge_list = query_response['matches']
+    if len(knowledge_list) > 0:
+        for i in range(len(knowledge_list)):
+            result = "提示{}:".format(i) + knowledge_list[i] + "\n"
+
+    return result
 
 
 
@@ -206,18 +212,21 @@ def predict(input, max_length, top_p, temperature, model_name, apikey, history=N
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
 
-    query_knowledge(input, session_id, pinecone_index)
+    knowledge_info = query_knowledge(input, session_id, pinecone_index)
 
-    history.append(input)
+    query_template = "请严格根据提示回答问题。\n{};问题：{}".format(knowledge_info, input)
 
+    history.append(query_template)
+
+    logging.warning("query_template:{}".format(query_template))
     if model_name == "ChatGLM-6B":
-        response = predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey , chatgml_chat_history)
+        response = predict_by_chatgml(query_template, max_length, top_p, temperature, model_name, apikey , chatgml_chat_history)
     elif model_name == "chatGpt-api":
-        response = conv.ask(input)
+        response = conv.ask(query_template)
     else:
-        response = notSupport(model_name, input)
+        response = notSupport(model_name, query_template)
 
-    chatgml_chat_history.append((input, response))
+    chatgml_chat_history.append((query_template, response))
     history.append(response)
     responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
     return responses, history
@@ -230,7 +239,7 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
         temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
-        model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"], label="Model")
+        model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"],default="ChatGLM-6B", label="Model")
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter").style(container=False)
         apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
 
