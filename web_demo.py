@@ -5,6 +5,11 @@ import openai
 import pinecone
 import uuid
 import random
+import os
+import requests
+
+
+
 
 session_id = str(uuid.uuid4().hex)
 
@@ -33,6 +38,31 @@ PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
 PINECONE_NAMESPACE = "demo_v1"
 
+
+
+
+url = "https://chatgptproxyapi-atq.pages.dev/v1/chat/completions"
+api_key = os.environ.get('the_key_you_need')
+
+
+headers = {
+  'Authorization': f'Bearer {api_key}',
+  'Content-Type': 'application/json'
+}
+
+payload_chat = {
+  "model": "gpt-3.5-turbo",
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is chatgpt"
+    }
+  ]
+}
+
+
+
+
 def add_random_chars(string):
     result = ""
     for char in string:
@@ -60,7 +90,20 @@ def load_pinecone_index() -> pinecone.Index:
 pinecone_index = load_pinecone_index()
 
 def get_embedding(text, engine):
-    logging.warning("api_key:{}".format(add_random_chars(openai.api_key)))
+    payload_embedding = {
+        "model": EMBEDDINGS_MODEL,
+        "messages": [
+            {
+                "role": "user",
+                "content": text
+            }
+        ]
+    }
+
+    response = requests.post(url, headers=headers, json=payload_embedding)
+    response.raise_for_status()
+    data = response.json()
+    logging.warning("get_embedding:" + data)
     return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
 
 def query_knowledge(question, session_id, pinecone_index):
