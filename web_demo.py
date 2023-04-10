@@ -41,7 +41,7 @@ PINECONE_NAMESPACE = "demo_v1"
 
 
 
-url = "https://chatgptproxyapi-atq.pages.dev/v1/chat/completions"
+url = "https://myfault.click/v1/chat/completions"
 api_key = os.environ.get('the_key_you_need')
 
 
