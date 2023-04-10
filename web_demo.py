@@ -74,7 +74,7 @@ def query_knowledge(question, session_id, pinecone_index):
     knowledge_list = query_response['matches']
     if len(knowledge_list) > 0:
         for i in range(len(knowledge_list)):
-            result = "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
+            result = result + "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
 
     return result
 
