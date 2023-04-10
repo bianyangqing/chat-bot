@@ -21,7 +21,7 @@ EMBEDDINGS_MODEL = "text-embedding-ada-002"
 GENERATIVE_MODEL = "gpt-3.5-turbo" # use gpt-4 for better results
 EMBEDDING_DIMENSIONS = 1536
 TEXT_EMBEDDING_CHUNK_SIZE = 200
-TOP_K = 10
+TOP_K = 2
 COSINE_SIM_THRESHOLD = 0.7
 MAX_TEXTS_TO_EMBED_BATCH_SIZE = 100
 MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
@@ -74,7 +74,7 @@ def query_knowledge(question, session_id, pinecone_index):
     knowledge_list = query_response['matches']
     if len(knowledge_list) > 0:
         for i in range(len(knowledge_list)):
-            result = "提示{}:".format(i) + knowledge_list[i] + "\n"
+            result = "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
 
     return result
 
