@@ -86,6 +86,8 @@ def load_pinecone_index() -> pinecone.Index:
 pinecone_index = load_pinecone_index()
 
 def get_embedding(text, engine):
+    logging.warning("API key:{}".format(openai.api_key))
+    logging.warning("base:{}".format(openai.api_base))
     resp = openai.Embedding.create(
         model="text-embedding-ada-002",
         input="The food was delicious and the waiter..."
