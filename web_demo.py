@@ -30,7 +30,7 @@ MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
 PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
-
+PINECONE_NAMESPACE = "demo_v1"
 
 
 def load_pinecone_index() -> pinecone.Index:
@@ -61,6 +61,7 @@ def query_knowledge(question, session_id, pinecone_index):
     logging.info(f"embedding for question: {search_query_embedding}")
 
     query_response = pinecone_index.query(
+        namespace=PINECONE_NAMESPACE,
         top_k=TOP_K,
         include_metadata=True,
         vector=search_query_embedding,
