@@ -100,7 +100,7 @@ def get_embedding(text, engine):
         ]
     }
 
-    response = requests.post(url, headers=headers, json=payload_embedding)
+    response = requests.post(url, headers=headers, json=payload_embedding, verify=False )
     response.raise_for_status()
     data = response.json()
     logging.warning("get_embedding:" + data)
