@@ -202,7 +202,6 @@ def get_answer_from_files(question, session_id, pinecone_index):
 
 class Conversation:
     def __init__(self, prompt, num_of_round):
-        self._id = uuid.uuid4().hex
         self.prompt = prompt
         self.num_of_round = num_of_round
         self.messages = []
