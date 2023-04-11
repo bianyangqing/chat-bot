@@ -236,6 +236,7 @@ class Conversation:
         return message
 
 
+conv = Conversation(prompt, 5)
 
 
 def notSupport(model_name, input):
@@ -256,7 +257,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
     return updates[-1]
 
 
-def predict(conv, input, model_name,  history=None):
+def predict(input, model_name,  history=None):
     openai.api_key = the_key_you_need
 
     openai.api_base = openai_api_base
@@ -289,7 +290,6 @@ def predict(conv, input, model_name,  history=None):
 with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
-    conv = Conversation(prompt, 5)
     with gr.Row():
         # max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
@@ -298,6 +298,6 @@ with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as d
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
 
-    txt.submit(predict, [conv, txt, model_name,  state], [chatbot, state])
+    txt.submit(predict, [txt, model_name,  state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
 
