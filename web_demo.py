@@ -253,6 +253,7 @@ def predict(input, model_name, apikey, history=None):
     openai.api_key[1] = apikey,
     openai.api_key[0] = 'Bearer'
     openai.api_base = openai_api_base
+
     logging.warning("history:{}".format(history))
     logging.warning("apikey:{}".format(apikey))
     logging.warning("openai.api_key:{}".format(openai.api_key))
