@@ -216,7 +216,7 @@ class Conversation:
             messages_copy.append({"role": "user", "content": question_template})
             self.messages.append({"role": "user", "content": query_origin})
 
-            logging.warning("gpt_messages:{}".format(messages_copy))
+            logging.warning("gpt_messages withStream:{}".format(messages_copy))
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=messages_copy,
