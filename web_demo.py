@@ -115,7 +115,7 @@ def query_knowledge(question, session_id, pinecone_index):
     result = ""
     knowledge_list = query_response['matches']
     if len(knowledge_list) > 0:
-        for i in range(max(len(knowledge_list), 2)):
+        for i in range(max(min(knowledge_list), 2)):
             result = result + "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
 
     return result
