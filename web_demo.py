@@ -250,10 +250,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 
 
 def predict(input, model_name, apikey, history=None):
-    openai.api_key[1] = apikey,
-    openai.api_key[0] = 'Bearer'
-    openai.api_base = openai_api_base
-
+    openai.api_key = ('Bearer', apikey)
     logging.warning("history:{}".format(history))
     logging.warning("apikey:{}".format(apikey))
     logging.warning("openai.api_key:{}".format(openai.api_key))
