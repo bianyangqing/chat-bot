@@ -94,7 +94,8 @@ def get_embedding(text, engine):
         input="The food was delicious and the waiter..."
     )
     logging.warning("openai.ChatCompletion.create:{}".format(resp))
-    return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
+    # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
+    return ""
 
 def query_knowledge(question, session_id, pinecone_index):
 
@@ -252,6 +253,7 @@ def predict(input, model_name, apikey, history=None):
     openai.api_key = apikey,
     openai.api_base = openai_api_base
     logging.warning("history:{}".format(history))
+    logging.warning("apikey:{}".format(apikey))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
 
