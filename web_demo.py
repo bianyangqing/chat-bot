@@ -6,6 +6,10 @@ import pinecone
 import uuid
 import random
 import os
+import copy
+
+
+prompt = """你是一个智能客服，可以帮助中国的餐饮店老板，在饿了么外卖平台上更好的经营"""
 
 session_id = str(uuid.uuid4().hex)
 
@@ -203,14 +207,18 @@ class Conversation:
         self.messages = []
         self.messages.append({"role": "system", "content": self.prompt})
 
-    def ask(self, question):
+    def ask(self, query_origin, question_template):
         logging.warning("gpttask_key:{}".format(openai.api_key))
         logging.warning("gptbase:{}".format(openai.api_base))
         try:
-            self.messages.append({"role": "user", "content": question})
+
+            messages_copy = copy.deepcopy(self.messages)
+            messages_copy.append({"role": "user", "content": question_template})
+            self.messages.append({"role": "user", "content": query_origin})
+
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=self.messages,
+                messages=messages_copy,
                 temperature=0.5,
                 max_tokens=2048,
                 top_p=1,
@@ -226,8 +234,6 @@ class Conversation:
             del self.messages[1:3]
         return message
 
-
-prompt = """你是一个智能客服，可以帮助中国的餐饮店老板，在饿了么外卖平台上更好的经营"""
 
 conv = Conversation(prompt, 5)
 
@@ -264,18 +270,18 @@ def predict(input, model_name,  history=None):
 
     query_template = "请严格根据提示回答问题。\n{}问题：{}".format(knowledge_info, input)
 
-    history.append(input)
+    history.append("问题：{}".format(input))
 
     logging.warning("query_template:{}".format(query_template))
     if model_name == "ChatGLM-6B":
         response = predict_by_chatgml(query_template, 2048, 0.7, 0.95, model_name, chatgml_chat_history)
     elif model_name == "chatGpt-api":
-        response = conv.ask(query_template)
+        response = conv.ask(input, query_template)
     else:
         response = notSupport(model_name, query_template)
 
     chatgml_chat_history.append((query_template, response))
-    history.append(response)
+    history.append("回答：{}".format(response))
     responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
     return responses, history
 
