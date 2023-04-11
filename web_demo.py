@@ -91,7 +91,7 @@ def get_embedding(text, engine):
     logging.warning("base:{}".format(openai.api_base))
     resp = openai.Embedding.create(
         model="text-embedding-ada-002",
-        input="The food was delicious and the waiter..."
+        input=text
     )
     # logging.warning("openai.ChatCompletion.create:{}".format(resp))
     # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
