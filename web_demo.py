@@ -223,7 +223,15 @@ class Conversation:
                 temperature=0.5,
                 max_tokens=2048,
                 top_p=1,
+                stream=True
             )
+
+            for message in response:
+                if "text" in message:
+                    text = message["text"].strip()
+                    logging.warning(f"AI: {text}")
+                elif "error" in message:
+                    logging.warning(f"Error: {message['error']['message']}")
         except Exception as e:
             print(e)
             return e
