@@ -262,9 +262,9 @@ def predict(input, model_name,  history=None):
 
     knowledge_info = query_knowledge(input, session_id, pinecone_index)
 
-    query_template = "请严格根据提示回答问题。\n{};问题：{}".format(knowledge_info, input)
+    query_template = "请严格根据提示回答问题。\n{}问题：{}".format(knowledge_info, input)
 
-    history.append(query_template)
+    history.append(input)
 
     logging.warning("query_template:{}".format(query_template))
     if model_name == "ChatGLM-6B":
@@ -280,7 +280,7 @@ def predict(input, model_name,  history=None):
     return responses, history
 
 
-with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as demo:
+with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
     with gr.Row():
