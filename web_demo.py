@@ -89,6 +89,7 @@ pinecone_index = load_pinecone_index()
 def get_embedding(text, engine):
     logging.warning("API key:{}".format(openai.api_key))
     logging.warning("base:{}".format(openai.api_base))
+    logging.warning("get_embedding text:{}".format(text))
     resp = openai.Embedding.create(
         model="text-embedding-ada-002",
         input=text
