@@ -6,4 +6,4 @@ torch>=1.10
 gradio
 pinecone-client
 uuid
-openai=0.27.2
+openai==0.27.2
