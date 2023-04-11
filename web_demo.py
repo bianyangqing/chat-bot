@@ -254,6 +254,7 @@ def predict(input, model_name, apikey, history=None):
     openai.api_base = openai_api_base
     logging.warning("history:{}".format(history))
     logging.warning("apikey:{}".format(apikey))
+    logging.warning("openai.api_key:{}".format(openai.api_key))
     logging.warning("input:{}".format(input))
     logging.warning("model_name:{}".format(model_name))
 
