@@ -95,7 +95,7 @@ def get_embedding(text, engine):
     )
     logging.warning("openai.ChatCompletion.create:{}".format(resp))
     # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
-    return ""
+    return resp['data'][0]['embedding']
 
 def query_knowledge(question, session_id, pinecone_index):
 
