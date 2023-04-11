@@ -93,7 +93,7 @@ def get_embedding(text, engine):
         model="text-embedding-ada-002",
         input="The food was delicious and the waiter..."
     )
-    logging.warning("openai.ChatCompletion.create:{}".format(resp))
+    # logging.warning("openai.ChatCompletion.create:{}".format(resp))
     # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
     return resp['data'][0]['embedding']
 
@@ -203,8 +203,8 @@ class Conversation:
         self.messages.append({"role": "system", "content": self.prompt})
 
     def ask(self, question):
-        print("start")
-        print(openai.api_key)
+        logging.warning("gpttask_key:{}".format(openai.api_key))
+        logging.warning("gptbase:{}".format(openai.api_base))
         try:
             self.messages.append({"role": "user", "content": question})
             response = openai.ChatCompletion.create(
@@ -287,7 +287,7 @@ with gr.Blocks(css="#chatbot{height:350px} .overflow-y-auto{height:500px}") as d
         # max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
         # temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
-        model_name = gr.inputs.Radio(["ChatGLM-6B", "chatGpt-api", "aliXX"],default="ChatGLM-6B", label="Model")
+        model_name = gr.inputs.Radio(["chatGpt-api", "ChatGLM-6B", "aliXX"],default="chatGpt-api", label="Model")
         apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
 
