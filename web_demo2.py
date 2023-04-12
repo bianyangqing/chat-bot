@@ -58,7 +58,9 @@ def predictByGpt(input, max_length, top_p, temperature, history=None):
     )
     updates = []
     content = ""
+    logging.warning("messageStream0")
     for message in response:
+        logging.warning("messageStream0")
         logging.warning("messageStream:{}".format(message))
         # if "content" in message['choices'][0]["delta"]:
         #     delta_content = message['choices'][0]["delta"]["content"]
