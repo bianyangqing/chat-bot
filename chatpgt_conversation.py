@@ -15,6 +15,7 @@ query_template = "请严格根据提示回答问题。如果根据提示无法�
 
 class ChatGpt:
     def __init__(self, knowledge):
+        self.messages = []
         self.knowledge = knowledge
         self.messages.append({"role": "system", "content": prompt})
 
