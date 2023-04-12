@@ -222,29 +222,20 @@ class Conversation:
                 messages=messages_copy,
                 temperature=0.5,
                 max_tokens=2048,
-                top_p=1,
-                stream=True
+                top_p=1
             )
 
-            response_msg = ""
-            for message in response:
-                # logging.warning("messageStream:{}".format(message))
-                if "content" in message['choices'][0]["delta"]:
-                    response_msg = response_msg + message['choices'][0]["delta"]["content"]
-                    # logging.warning("messageStream2:{}".format(response_msg))
-                    gr.update(visible=True, value=response_msg)
-                    gr.update(visible=True, value="User：" + query_origin)
-                elif response_msg + message['choices'][0]["finish_reason"] == "stop":
-                    break
         except Exception as e:
             print(e)
             return e
 
-        self.messages.append({"role": "assistant", "content": response_msg})
+        message = response["choices"][0]["message"]["content"]
+
+        self.messages.append({"role": "assistant", "content": message})
 
         if len(self.messages) > self.num_of_round * 2 + 1:
             del self.messages[1:3]
-        return response_msg
+        return message
 
 
 conv = Conversation(prompt, 5)
@@ -271,7 +262,7 @@ def predict_by_chatgml(input, max_length, top_p, temperature, model_name, apikey
 def predict(input, model_name,  history=None):
     openai.api_key = the_key_you_need
 
-    # openai.api_base = openai_api_base
+    openai.api_base = openai_api_base
 
     logging.warning("history:{}".format(history))
     logging.warning("openai.api_key:{}".format(openai.api_key))
