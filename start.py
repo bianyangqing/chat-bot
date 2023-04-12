@@ -47,9 +47,9 @@ def stream_chat(question, history=None, box_size=20):
         content = content + delta_content
         logging.warning("content:{}".format(content))
         history.append((question, content))
-        for question, content in history:
-            updates.append(gr.update(visible=True, value="User：" + question))
-            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
+        for question1, content1 in history:
+            updates.append(gr.update(visible=True, value="User：" + question1))
+            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content1))
         if len(updates) < box_size:
             updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
         yield [history] + updates
