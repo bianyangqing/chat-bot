@@ -12,6 +12,8 @@ openai.api_base = openai_api_base
 prompt = """你是一个智能客服，可以帮助中国的餐饮店老板，在饿了么外卖平台上更好的经营"""
 query_template = "请严格根据提示回答问题。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
 
+logging.basicConfig(level=logging.INFO)
+
 
 class ChatGpt:
     def __init__(self, knowledge):
@@ -24,7 +26,7 @@ class ChatGpt:
         knowledges = self.knowledge.query_knowledge(question=question, top_k=3)
         query_template.format(knowledges, question)
 
-        logging.warning("before,input:{},history:{}".format(input, history))
+        logging.warning("before,input:{},history:{}".format(question, history))
         if history is None:
             history = []
         history.append(("", ""))
@@ -48,9 +50,9 @@ class ChatGpt:
                 delta_content = "" if delta_content is None else delta_content
                 content = content + delta_content
             logging.warning("content:{}".format(content))
-            updates.append(gr.update(visible=True, value="User：" + input))
+            updates.append(gr.update(visible=True, value="User：" + question))
             updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
-            history[0] = (input, content)
+            history[0] = (question, content)
             if len(updates) < box_size:
                 updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
             logging.warning("result:{}".format([history] + updates))

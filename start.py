@@ -1,13 +1,16 @@
 import gradio as gr
 import knowledge
 import chatpgt_conversation
+import logging
 
 MAX_BOXES = 20
 k = knowledge.KnowledgeMixin()
 chatgpt = chatpgt_conversation.ChatGpt(k)
 
+logging.basicConfig(level=logging.INFO)
 
 def predict(input, history=None):
+    logging.warning("question_received:{}".format(input))
     return chatgpt.stream_chat(input, history, MAX_BOXES)
 
 
