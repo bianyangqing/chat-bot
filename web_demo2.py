@@ -43,6 +43,8 @@ def predict(input, max_length, top_p, temperature, history=None):
 
 
 def predictByGpt(input, max_length, top_p, temperature, history=None):
+
+    logging.warning("testLog")
     openai.api_key = the_key_you_need
     openai.api_base = openai_api_base
     logging.warning("before,input:{},history:{}".format(input, history))
