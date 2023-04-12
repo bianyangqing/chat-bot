@@ -228,7 +228,9 @@ class Conversation:
 
             response_msg = ""
             for message in response:
+                logging.warning("messageStream:{}".format(message))
                 response_msg = response_msg + message['choices'][0]["delta"]["content"]
+                logging.warning("messageStream2:{}".format(response_msg))
                 gr.update(visible=True, value=response_msg)
                 gr.update(visible=True, value="User：" + query_origin)
         except Exception as e:
