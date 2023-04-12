@@ -32,12 +32,9 @@ def stream_chat(question, history=None, box_size=20):
     )
     content = ""
     for message in response:
-
         if len(content)>0 and len(history)>0:
             # history中去掉最后一个元素
             history.pop()
-
-
 
         updates = []
         if "content" in message['choices'][0]["delta"]:
