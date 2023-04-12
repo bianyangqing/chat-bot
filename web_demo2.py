@@ -62,13 +62,13 @@ def predictByGpt(input, max_length, top_p, temperature, history=None):
     for message in response:
         logging.warning("messageStream0")
         logging.warning("messageStream:{}".format(message))
-        # if "content" in message['choices'][0]["delta"]:
-        #     delta_content = message['choices'][0]["delta"]["content"]
-        #     delta_content = "" if delta_content is None else delta_content
-        #     content = content + delta_content
-        #     updates.append(gr.update(visible=True, value="User：" + input))
-        #     updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
-        # yield [history] + updates
+        if "content" in message['choices'][0]["delta"]:
+            delta_content = message['choices'][0]["delta"]["content"]
+            delta_content = "" if delta_content is None else delta_content
+            content = content + delta_content
+            updates.append(gr.update(visible=True, value="User：" + input))
+            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
+        yield [history] + updates
 
 
 
