@@ -271,7 +271,7 @@ def predict(input, model_name,  history=None):
 
     knowledge_info = query_knowledge(input, session_id, pinecone_index)
 
-    query_template = "请严格根据提示回答问题。\n{}问题：{}".format(knowledge_info, input)
+    query_template = "请严格根据提示回答问题。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}".format(knowledge_info, input)
 
     history.append("问题：{}".format(input))
 
