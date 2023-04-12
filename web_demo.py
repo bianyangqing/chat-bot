@@ -284,7 +284,9 @@ def predict(input, model_name,  history=None):
         response = notSupport(model_name, query_template)
 
     chatgml_chat_history.append((query_template, response))
-    history.append("回答：{}".format(response))
+    history.append("{}".format(response))
+
+    logging.warning("response:{}".format(response))
     responses = [(u, b) for u, b in zip(history[::2], history[1::2])]
     return responses, history
 
