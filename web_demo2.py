@@ -1,36 +1,50 @@
-import openai
+from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 
-# 设置OpenAI API的访问密钥
-openai.api_key = "YOUR_API_KEY"
+import logging
 
-# 定义聊天接口
-def chat(prompt):
-    # 调用OpenAI API进行聊天
-    response = openai.Completion.create(
-        engine="davinci",
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.7,
-        stream=True  # 开启流式响应
-    )
-    # 逐步读取响应中的数据
-    message = ""
-    for chunk in response:
-        if "choices" in chunk:
-            message += chunk["choices"][0]["text"]
-            # 实时更新Gradio界面上的文本框
-            gr.interface.set_output(message)
-    return message.strip()
+logging.basicConfig(level=logging.INFO)
+tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True)
+model = AutoModel.from_pretrained("THUDM/chatglm-6b-int4", trust_remote_code=True).half().cuda()
+model = model.eval()
 
-# 创建Gradio界面
-chat_interface = gr.Interface(
-    fn=chat,
-    inputs=gr.inputs.Textbox(label="输入"),
-    outputs=gr.outputs.Textbox(label="输出", output_type="text", live=True)  # 设置输出参数的live=True
-)
+MAX_TURNS = 20
+MAX_BOXES = MAX_TURNS * 2
 
-# 运行Gradio界面
-chat_interface.launch()
+
+def predict(input, max_length, top_p, temperature, history=None):
+    logging.warning("before,input:{},history:{}".format(input, history))
+    if history is None:
+        history = []
+    for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
+                                               temperature=temperature):
+        updates = []
+        for query, response in history:
+            updates.append(gr.update(visible=True, value="User：" + query))
+            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + response))
+        if len(updates) < MAX_BOXES:
+            updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
+        logging.warning("after,updates:{},history:{}".format(updates, history))
+        yield [history] + updates
+
+
+with gr.Blocks() as demo:
+    state = gr.State([])
+    text_boxes = []
+    for i in range(MAX_BOXES):
+        if i % 2 == 0:
+            text_boxes.append(gr.Markdown(visible=False, label="Ask a Question："))
+        else:
+            text_boxes.append(gr.Markdown(visible=False, label="Reply："))
+
+    with gr.Row():
+        with gr.Column(scale=4):
+            txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", lines=11).style(
+                container=False)
+        with gr.Column(scale=1):
+            max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum length", interactive=True)
+            top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
+            temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
+            button = gr.Button("Generate")
+    button.click(predict, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
+demo.queue().launch(share=True, inbrowser=True)

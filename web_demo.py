@@ -36,7 +36,7 @@ MAX_PINECONE_VECTORS_TO_UPSERT_PATCH_SIZE = 100
 PINECONE_API_KEY = "296da2b9-5df6-4d2a-8b77-058137e16a56"
 PINECONE_INDEX = "demoindex1"  # dimensions: 1536, metric: cosine similarity
 PINECONE_ENV = "us-east4-gcp"
-PINECONE_NAMESPACE = "demo_v1"
+PINECONE_NAMESPACE = "demo_v5"
 
 
 
@@ -301,12 +301,6 @@ def predict(input, model_name,  history=None):
 with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
-    text_boxes = []
-    for i in range(MAX_BOXES):
-        if i % 2 == 0:
-            text_boxes.append(gr.Markdown(visible=False, label="Ask a Question："))
-        else:
-            text_boxes.append(gr.Markdown(visible=False, label="Reply："))
     with gr.Row():
         # max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
@@ -315,6 +309,6 @@ with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as d
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
 
-    txt.submit(predict, [txt, model_name,  state], [state] + text_boxes)
+    txt.submit(predict, [txt, model_name, state], [chatbot, state])
 demo.launch(share=True, inbrowser=True)
 

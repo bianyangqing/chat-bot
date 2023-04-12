@@ -88,6 +88,17 @@ def predict(input, max_length, top_p, temperature, history=None):
     query_template = "请严格根据提示回答问题。\n{}问题：{}".format(knowledge_info, input)
 
     history.append("问题：{}".format(input))
+    messages_copy=[]
+    messages_copy.append({"role": "user", "content": input})
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages_copy,
+        temperature=0.5,
+        max_tokens=2048,
+        top_p=1,
+        stream=True
+    )
+
 
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                temperature=temperature):
