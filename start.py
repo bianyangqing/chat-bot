@@ -15,14 +15,14 @@ openai.api_base = os.environ.get('openai_api_base')
 
 def stream_chat(question, history=None, box_size=20):
     knowledges = k.query_knowledge(question=question, top_k=3)
-    query_template.format(knowledges, question)
+    question_with_template = query_template.format(knowledges, question)
 
     if history is None:
         history = []
     history.append(("", ""))
-    messages_copy = [{"role": "user", "content": query_template}]
+    messages_copy = [{"role": "user", "content": question_with_template}]
 
-    logging.warning("before,input:{},history:{},message:{}".format(question, history, messages_copy))
+    logging.warning("before,input:{},history:{},message:{}".format(question, history, question_with_template))
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages_copy,
