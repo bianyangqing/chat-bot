@@ -42,6 +42,7 @@ def predict(input, max_length, top_p, temperature, history=None):
         yield [history] + updates
 
 
+
 def predictByGpt(input, max_length, top_p, temperature, history=None):
 
     logging.warning("testLog")
