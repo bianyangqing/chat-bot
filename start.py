@@ -41,13 +41,14 @@ def stream_chat(question, history=None, box_size=20):
         updates = []
         if "content" in message['choices'][0]["delta"]:
             delta_content = message['choices'][0]["delta"]["content"]
-            delta_content = "" if delta_content is None else delta_content
-            content = content + delta_content
+        else:
+            delta_content = " "
+        delta_content = " " if delta_content is None else delta_content
+        content = content + delta_content
         logging.warning("content:{}".format(content))
         updates.append(gr.update(visible=True, value="User：" + question))
         updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
-        if len(content)>0:
-            history.append((question, content))
+        history.append((question, content))
         if len(updates) < box_size:
             updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
         yield [history] + updates
