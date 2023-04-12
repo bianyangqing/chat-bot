@@ -301,6 +301,12 @@ def predict(input, model_name,  history=None):
 with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
+    text_boxes = []
+    for i in range(MAX_BOXES):
+        if i % 2 == 0:
+            text_boxes.append(gr.Markdown(visible=False, label="Ask a Question："))
+        else:
+            text_boxes.append(gr.Markdown(visible=False, label="Reply："))
     with gr.Row():
         # max_length = gr.Slider(0, 4096, value=2048, step=1.0, label="Maximum lengthhhh", interactive=True)
         # top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
@@ -309,6 +315,6 @@ with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as d
         # apikey = gr.Textbox(show_label=False, placeholder="Enter chatGpt api key sk-xxxxx").style(container=False)
         txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", label="Question").style(container=False)
 
-    txt.submit(predict, [txt, model_name,  state], [chatbot, state])
+    txt.submit(predict, [txt, model_name,  state], [state] + text_boxes)
 demo.launch(share=True, inbrowser=True)
 
