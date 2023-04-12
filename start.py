@@ -2,12 +2,15 @@ import gradio as gr
 import knowledge
 import logging
 import openai
+import os
 
 MAX_BOXES = 20
 k = knowledge.KnowledgeMixin()
 
 logging.basicConfig(level=logging.INFO)
 query_template = "请严格根据提示回答问题。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
+openai.api_key = os.environ.get('the_key_you_need')
+openai.api_base = os.environ.get('openai_api_base')
 
 
 def stream_chat(question, history=None, box_size=20):
