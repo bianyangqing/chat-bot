@@ -16,6 +16,28 @@ def predict(input, max_length, top_p, temperature, history=None):
     logging.warning("before,input:{},history:{}".format(input, history))
     if history is None:
         history = []
+
+    logging.warning("type0".format(type(history).__name__))
+    for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
+                                               temperature=temperature):
+        logging.warning("type1".format(type(history).__name__))
+        logging.warning("type2".format(type(response).__name__))
+        updates = []
+        for query, response in history:
+            logging.warning("type3".format(type(history).__name__))
+            logging.warning("type4".format(type(response).__name__))
+            updates.append(gr.update(visible=True, value="User：" + query))
+            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + response))
+        if len(updates) < MAX_BOXES:
+            updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
+        logging.warning("after,updates:{},history:{}".format(updates, history))
+        yield [history] + updates
+
+
+def predictByGpt(input, max_length, top_p, temperature, history=None):
+    logging.warning("before,input:{},history:{}".format(input, history))
+    if history is None:
+        history = []
     for response, history in model.stream_chat(tokenizer, input, history, max_length=max_length, top_p=top_p,
                                                temperature=temperature):
         updates = []
