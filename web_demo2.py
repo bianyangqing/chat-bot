@@ -1,6 +1,7 @@
 from transformers import AutoModel, AutoTokenizer
 import gradio as gr
 import openai
+import os
 
 import logging
 
@@ -12,6 +13,13 @@ model = model.eval()
 MAX_TURNS = 20
 MAX_BOXES = MAX_TURNS * 2
 
+the_key_you_need = os.environ.get('the_key_you_need')
+
+openai_api_base = os.environ.get('openai_api_base')
+
+openai.api_key = the_key_you_need
+
+openai.api_base = openai_api_base
 
 def predict(input, max_length, top_p, temperature, history=None):
     logging.warning("before,input:{},history:{}".format(input, history))
