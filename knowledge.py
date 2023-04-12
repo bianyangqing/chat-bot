@@ -52,9 +52,9 @@ class KnowledgeMixin:
             include_metadata=True,
             vector=search_query_embedding,
         )
-        logging.warning(
-            f"[get_answer_from_files] received query response from Pinecone: {query_response}"
-        )
+        # logging.warning(
+        #     f"[get_answer_from_files] received query response from Pinecone: {query_response}"
+        # )
 
         result = ""
         knowledge_list = query_response['matches']

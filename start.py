@@ -17,11 +17,12 @@ def stream_chat(question, history=None, box_size=20):
     knowledges = k.query_knowledge(question=question, top_k=3)
     query_template.format(knowledges, question)
 
-    logging.warning("before,input:{},history:{}".format(question, history))
     if history is None:
         history = []
     history.append(("", ""))
     messages_copy = [{"role": "user", "content": query_template}]
+
+    logging.warning("before,input:{},history:{},message:{}".format(question, history, messages_copy))
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages_copy,
@@ -31,11 +32,11 @@ def stream_chat(question, history=None, box_size=20):
         stream=True
     )
     content = ""
-    logging.warning("messageStream0")
+    # logging.warning("messageStream0")
     for message in response:
         updates = []
-        logging.warning("messageStream0")
-        logging.warning("messageStream:{}".format(message))
+        # logging.warning("messageStream0")
+        # logging.warning("messageStream:{}".format(message))
         if "content" in message['choices'][0]["delta"]:
             delta_content = message['choices'][0]["delta"]["content"]
             delta_content = "" if delta_content is None else delta_content
@@ -46,7 +47,7 @@ def stream_chat(question, history=None, box_size=20):
         history[0] = (question, content)
         if len(updates) < box_size:
             updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
-        logging.warning("result:{}".format([history] + updates))
+        # logging.warning("result:{}".format([history] + updates))
         yield [history] + updates
 
 with gr.Blocks() as demo:
