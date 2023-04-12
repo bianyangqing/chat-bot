@@ -8,6 +8,10 @@ import random
 import os
 import copy
 
+NOTE = 'V1版本局限性说明 \n' \
+       '1、大模型接口调用较慢，目前流式打字机效果还在调试中，请耐心等待。（如果我们明天打字机出不来的话）\n' \
+       '2、目前饿了么商家知识库数据量还非常小，可能会出现“幻觉”现象并返回不符合事实的信息（尤其是页面配置、url等）。\n' \
+       '3、V2版本计划提升回答的准确性、其他用户体验等。'
 
 prompt = """你是一个智能客服，可以帮助中国的餐饮店老板，在饿了么外卖平台上更好的经营"""
 
@@ -291,7 +295,10 @@ def predict(input, model_name,  history=None):
     return responses, history
 
 
-with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}") as demo:
+with gr.Blocks(css="#chatbot{height:600px} .overflow-y-auto{height:500px}",
+               title="商家小助手",
+               description= NOTE,
+) as demo:
     chatbot = gr.Chatbot(elem_id="chatbot")
     state = gr.State([])
     with gr.Row():
