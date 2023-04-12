@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 def predict(input, history=None):
     logging.warning("question_received:{}".format(input))
-    return chatgpt.stream_chat(input, history, MAX_BOXES)
+    chatgpt.stream_chat(input, history, MAX_BOXES)
 
 
 with gr.Blocks() as demo:
