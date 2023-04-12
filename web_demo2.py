@@ -40,6 +40,7 @@ def predict(input, max_length, top_p, temperature, history=None):
         if len(updates) < MAX_BOXES:
             updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
         logging.warning("after,updates:{},history:{}".format(updates, history))
+        logging.warning("yield_result:{}".format([history] + updates))
         yield [history] + updates
 
 
@@ -92,5 +93,5 @@ with gr.Blocks() as demo:
             top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
             temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
             button = gr.Button("Generate")
-    button.click(predictByGpt, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
+    button.click(predict, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
 demo.queue().launch(share=True, inbrowser=True)
