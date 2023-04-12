@@ -117,5 +117,5 @@ with gr.Blocks() as demo:
             top_p = gr.Slider(0, 1, value=0.7, step=0.01, label="Top P", interactive=True)
             temperature = gr.Slider(0, 1, value=0.95, step=0.01, label="Temperature", interactive=True)
             button = gr.Button("Generate")
-    button.click(predictByGpt, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
+    button.click(predictTest, [txt, max_length, top_p, temperature, state], [state] + text_boxes)
 demo.queue().launch(share=True, inbrowser=True)
