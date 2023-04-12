@@ -229,10 +229,13 @@ class Conversation:
             response_msg = ""
             for message in response:
                 logging.warning("messageStream:{}".format(message))
-                response_msg = response_msg + message['choices'][0]["delta"]["content"]
-                logging.warning("messageStream2:{}".format(response_msg))
-                gr.update(visible=True, value=response_msg)
-                gr.update(visible=True, value="User：" + query_origin)
+                if "content" in message['choices'][0]["delta"]:
+                    response_msg = response_msg + message['choices'][0]["delta"]["content"]
+                    logging.warning("messageStream2:{}".format(response_msg))
+                    gr.update(visible=True, value=response_msg)
+                    gr.update(visible=True, value="User：" + query_origin)
+                else:
+                    logging.warning("messageStream3:{}".format(response_msg))
         except Exception as e:
             print(e)
             return e
