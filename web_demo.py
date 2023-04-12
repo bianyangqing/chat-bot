@@ -227,11 +227,7 @@ class Conversation:
             )
 
             for message in response:
-                if "text" in message:
-                    text = message["text"].strip()
-                    logging.warning(f"AI: {text}")
-                elif "error" in message:
-                    logging.warning(f"Error: {message['error']['message']}")
+                print("streamMessage:{}".format(message))
         except Exception as e:
             print(e)
             return e
