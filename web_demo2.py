@@ -9,7 +9,6 @@ import logging
 
 
 the_key_you_need = os.environ.get('the_key_you_need')
-
 openai_api_base = os.environ.get('openai_api_base')
 
 
