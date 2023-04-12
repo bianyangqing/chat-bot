@@ -226,18 +226,20 @@ class Conversation:
                 stream=True
             )
 
+            response_msg = ""
             for message in response:
-                print("streamMessage:{}".format(message))
+                response_msg = response_msg + message['choices'][0]["delta"]["content"]
+                gr.update(visible=True, value=response_msg)
+                gr.update(visible=True, value="User：" + query_origin)
         except Exception as e:
             print(e)
             return e
 
-        message = response["choices"][0]["message"]["content"]
-        self.messages.append({"role": "assistant", "content": message})
+        self.messages.append({"role": "assistant", "content": response_msg})
 
         if len(self.messages) > self.num_of_round * 2 + 1:
             del self.messages[1:3]
-        return message
+        return response_msg
 
 
 conv = Conversation(prompt, 5)
