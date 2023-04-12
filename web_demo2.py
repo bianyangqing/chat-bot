@@ -70,10 +70,10 @@ def predictByGpt(input, max_length, top_p, temperature, history=None):
             delta_content = message['choices'][0]["delta"]["content"]
             delta_content = "" if delta_content is None else delta_content
             content = content + delta_content
-            logging.warning("content:{}".format(content))
-            updates.append(gr.update(visible=True, value="User：" + input))
-            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
-            history[0] = (input, content)
+        logging.warning("content:{}".format(content))
+        updates.append(gr.update(visible=True, value="User：" + input))
+        updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content))
+        history[0] = (input, content)
         if len(updates) < MAX_BOXES:
             updates = updates + [gr.Textbox.update(visible=False)] * (MAX_BOXES - len(updates))
         logging.warning("result:{}".format([history] + updates))
