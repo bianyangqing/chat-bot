@@ -212,7 +212,7 @@ class Conversation:
         logging.warning("gptbase:{}".format(openai.api_base))
         try:
 
-            messages_copy = copy.deepcopy(self.messages)
+            messages_copy = []
             messages_copy.append({"role": "user", "content": question_template})
             self.messages.append({"role": "user", "content": query_origin})
 
@@ -228,14 +228,14 @@ class Conversation:
 
             response_msg = ""
             for message in response:
-                logging.warning("messageStream:{}".format(message))
+                # logging.warning("messageStream:{}".format(message))
                 if "content" in message['choices'][0]["delta"]:
                     response_msg = response_msg + message['choices'][0]["delta"]["content"]
-                    logging.warning("messageStream2:{}".format(response_msg))
+                    # logging.warning("messageStream2:{}".format(response_msg))
                     gr.update(visible=True, value=response_msg)
                     gr.update(visible=True, value="User：" + query_origin)
-                else:
-                    logging.warning("messageStream3:{}".format(response_msg))
+                elif response_msg + message['choices'][0]["finish_reason"] == "stop":
+                    break
         except Exception as e:
             print(e)
             return e
