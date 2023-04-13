@@ -9,13 +9,16 @@ k = knowledge.KnowledgeMixin()
 
 logging.basicConfig(level=logging.INFO)
 # query_template = "请严格根据提示回答问题,尽量给出详细的操作步骤。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
-query_template = "尽量按照给出的提示回答问题'\n{}问题：{}"
+query_template = "尽量按照给出的提示回答问题，回答尽量详细具有可操作性，语气尽量热情'\n{}问题：{}"
 openai.api_key = os.environ.get('the_key_you_need')
 openai.api_base = os.environ.get('openai_api_base')
 
-NOTE_TXT = "试试以下问题吧\n" \
-           "1、店铺下线了，如何处理？\n" \
-           "2、店铺二维码怎么分享？\n" \
+NOTE_TXT = "试试以下问题吧：\n" \
+           "1、怎么发布对用户有吸引力的商品？" \
+           "2、如何提升曝光量？" \
+           "3、如何提升店铺质量分？" \
+           "4、店铺下线了，如何处理？" \
+           "5、店铺二维码怎么分享？" \
            "版本说明：\n" \
            "1、大模型接口调用较慢\n" \
            "2、目前饿了么商家知识库数据量还非常小，可能会出现“幻觉”现象并返回不符合事实的信息（尤其是页面配置、url等）\n" \
