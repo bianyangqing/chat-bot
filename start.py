@@ -9,7 +9,10 @@ k = knowledge.KnowledgeMixin()
 
 logging.basicConfig(level=logging.INFO)
 # query_template = "请严格根据提示回答问题,尽量给出详细的操作步骤。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
-query_template = "尽量按照给出的提示回答问题，回答尽量详细具有可操作性，语气尽量热情'\n{}问题：{}"
+query_template = "你是一个帮助餐饮店老板在饿了么外卖平台上经验的助手。" \
+                 "尽量按照给出的提示回答问题。" \
+                 "语气尽量热情。" \
+                 "回答尽量详细具有可操作性，尽量避免太长的句子，用1、2、3列举换行的方式表达'\n{}问题：{}"
 openai.api_key = os.environ.get('the_key_you_need')
 openai.api_base = os.environ.get('openai_api_base')
 
