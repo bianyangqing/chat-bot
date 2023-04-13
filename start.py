@@ -8,9 +8,18 @@ MAX_BOXES = 20
 k = knowledge.KnowledgeMixin()
 
 logging.basicConfig(level=logging.INFO)
-query_template = "请严格根据提示回答问题,尽量给出详细的操作步骤。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
+# query_template = "请严格根据提示回答问题,尽量给出详细的操作步骤。如果根据提示无法回答请返回：'抱歉，我的饿了么知识库还在补充中，暂时没有找到相关知识！'\n{}问题：{}"
+query_template = "尽量按照给出的提示回答问题'\n{}问题：{}"
 openai.api_key = os.environ.get('the_key_you_need')
 openai.api_base = os.environ.get('openai_api_base')
+
+NOTE_TXT = "版本说明：\n" \
+           "1、大模型接口调用较慢，目前流式打字机效果还在调试中，请耐心等待。（如果我们明天打字机出不来的话）\n" \
+           "2、目前饿了么商家知识库数据量还非常小，可能会出现“幻觉”现象并返回不符合事实的信息（尤其是页面配置、url等）\n" \
+           "3、V2版本计划提升回答的准确性、其他用户体验等。\n" \
+           "试试以下问题吧\n" \
+           "1、店铺下线了，如何处理？\n" \
+           "2、店铺二维码怎么分享？\n" \
 
 
 def stream_chat(question, history=None, box_size=20):
@@ -65,6 +74,12 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         with gr.Column(scale=4):
+
+            note = gr.Textbox(show_label=False,
+                             placeholder="Enter text and press enter",
+                             lines=5,
+                             interactive=False).style(container=False)
+
             txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", lines=3).style(
                 container=False)
         with gr.Column(scale=1):
