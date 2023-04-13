@@ -41,7 +41,7 @@ class KnowledgeMixin:
         # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
         return resp['data'][0]['embedding']
 
-    def query_knowledge(self, question, top_k=6):
+    def query_knowledge(self, question, top_k=3):
 
         search_query_embedding = self.get_embedding(question)
         logging.info(f"embedding for question: {search_query_embedding}")

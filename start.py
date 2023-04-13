@@ -16,7 +16,7 @@ openai.api_base = os.environ.get('openai_api_base')
 def stream_chat(question, history=None, box_size=20):
     logging.warning("before,input:{},history:{}".format(question, history))
 
-    knowledges = k.query_knowledge(question=question, top_k=3)
+    knowledges = k.query_knowledge(question=question, top_k=6)
     question_with_template = query_template.format(knowledges, question)
 
     if history is None:
