@@ -41,7 +41,7 @@ class KnowledgeMixin:
         # return openai.Engine(id=engine).embeddings(input=[text])["data"][0]["embedding"]
         return resp['data'][0]['embedding']
 
-    def query_knowledge(self, question, top_k=3):
+    def query_knowledge(self, question, top_k=6):
 
         search_query_embedding = self.get_embedding(question)
         logging.info(f"embedding for question: {search_query_embedding}")
@@ -59,7 +59,7 @@ class KnowledgeMixin:
         result = ""
         knowledge_list = query_response['matches']
         if len(knowledge_list) > 0:
-            for i in range(min(len(knowledge_list), 2)):
+            for i in range(min(len(knowledge_list), top_k)):
                 result = result + "提示{}:".format(i) + knowledge_list[i]['metadata']['content'] + "\n"
 
         return result
