@@ -17,7 +17,7 @@ NOTE_TXT = "试试以下问题吧\n" \
            "1、店铺下线了，如何处理？\n" \
            "2、店铺二维码怎么分享？\n" \
            "版本说明：\n" \
-           "1、大模型接口调用较慢，目前流式打字机效果还在调试中，请耐心等待。（如果我们明天打字机出不来的话）\n" \
+           "1、大模型接口调用较慢\n" \
            "2、目前饿了么商家知识库数据量还非常小，可能会出现“幻觉”现象并返回不符合事实的信息（尤其是页面配置、url等）\n" \
            "3、V2版本计划提升回答的准确性、其他用户体验等。\n" \
 
@@ -58,8 +58,8 @@ def stream_chat(question, history=None, box_size=20):
         logging.warning("content:{}".format(content))
         history.append((question, content))
         for question1, content1 in history:
-            updates.append(gr.update(visible=True, value="User：" + question1))
-            updates.append(gr.update(visible=True, value="ChatGLM-6B：" + content1))
+            updates.append(gr.update(visible=True, value="用户：" + question1))
+            updates.append(gr.update(visible=True, value="智能助手：" + content1))
         if len(updates) < box_size:
             updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
         yield [history] + updates
