@@ -12,11 +12,12 @@ logging.basicConfig(level=logging.INFO)
 query_template = "你是一个帮助餐饮店老板在饿了么外卖平台上经验的助手。" \
                  "尽量按照给出的提示回答问题。" \
                  "语气尽量热情。" \
-                 "回答尽量详细具有可操作性，尽量避免太长的句子，用1、2、3列举换行的方式表达'\n{}问题：{}"
+                 "回答要内容完整，尽量详细具有可操作性，尽量避免太长的句子，用1、2、3列举换行的方式表达'\n{}问题：{}"
 openai.api_key = os.environ.get('the_key_you_need')
 openai.api_base = os.environ.get('openai_api_base')
 
 NOTE_TXT = "【您可以这么提问】：\n" \
+           "＊订单接单不及时导致超时了，有什么好的办法？\n" \
            "＊怎么发布对用户有吸引力的商品？\n" \
            "＊如何提升曝光量？\n" \
            "＊如何提升店铺质量分？\n" \
