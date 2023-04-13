@@ -73,6 +73,12 @@ def stream_chat(question, history=None, box_size=20):
 with gr.Blocks() as demo:
     state = gr.State([])
     text_boxes = []
+
+    note = gr.Textbox(show_label=False,
+                      placeholder=NOTE_TXT,
+                      lines=5,
+                      interactive=False).style(container=False)
+
     for i in range(MAX_BOXES):
         if i % 2 == 0:
             text_boxes.append(gr.Markdown(visible=False, label="Ask a Question："))
@@ -81,12 +87,6 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         with gr.Column(scale=4):
-
-            note = gr.Textbox(show_label=False,
-                             placeholder=NOTE_TXT,
-                             lines=5,
-                             interactive=False).style(container=False)
-
             txt = gr.Textbox(show_label=False, placeholder="Enter text and press enter", lines=3).style(
                 container=False)
         with gr.Column(scale=1):
