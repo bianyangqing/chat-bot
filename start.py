@@ -72,6 +72,7 @@ def stream_chat(question, history=None, box_size=20):
             updates.append(gr.update(visible=True, value="智能助手：" + content1))
         if len(updates) < box_size:
             updates = updates + [gr.Textbox.update(visible=False)] * (box_size - len(updates))
+        updates.append(gr.Textbox.update(value=""))
         yield [history] + updates
 
 
@@ -81,6 +82,7 @@ with gr.Blocks() as demo:
 
     note = gr.Textbox(show_label=False,
                       placeholder=NOTE_TXT,
+                      value=NOTE_TXT,
                       lines=5,
                       interactive=False).style(container=False)
 
@@ -96,5 +98,5 @@ with gr.Blocks() as demo:
                 container=False)
         with gr.Column(scale=1):
             button = gr.Button("Generate")
-    button.click(stream_chat, [txt, state], [state] + text_boxes)
+    button.click(stream_chat, [txt, state], [state] + text_boxes + [txt])
 demo.queue().launch(share=True, inbrowser=True)
