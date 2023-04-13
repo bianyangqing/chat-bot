@@ -77,7 +77,7 @@ with gr.Blocks() as demo:
         with gr.Column(scale=4):
 
             note = gr.Textbox(show_label=False,
-                             placeholder="Enter text and press enter",
+                             placeholder=NOTE_TXT,
                              lines=5,
                              interactive=False).style(container=False)
 
